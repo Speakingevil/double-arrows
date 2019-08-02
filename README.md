@@ -1,1 +1,1 @@
-# double-arrows
+#[ModKit Wiki](../../wiki)
