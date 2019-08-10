@@ -317,6 +317,7 @@ public class DoubleArrowsScript : MonoBehaviour {
         {
             yield return null;
             buttons[8].OnInteract();
+	    yield break;
         }
 
             var buttonstring = Regex.Match(command, @"^\s*([lurdLURD, ]+)\s*$");
