@@ -30,7 +30,7 @@ public class DoubleArrowsScript : MonoBehaviour {
     private int pressCount;
     private bool freeMode;
     private bool ascend;
-
+    private Dictionary<string, KMSelectable> arrowsDict = new Dictionary<string, KMSelectable>();
     //Logging
     static int moduleCounter = 1;
     int moduleID;
@@ -44,6 +44,17 @@ public class DoubleArrowsScript : MonoBehaviour {
             int b = buttons.IndexOf(button);
             button.OnInteract += delegate () { ButtonPress(b); return false; };
         }
+        arrowsDict = new Dictionary<string, KMSelectable>()
+                {
+                    {"l", buttons[0]},
+                    {"u", buttons[1]},
+                    {"r", buttons[2]},
+                    {"d", buttons[3]},
+                    {"L", buttons[4]},
+                    {"U", buttons[5]},
+                    {"R", buttons[6]},
+                    {"D", buttons[7]}
+                };
     }
 
     void Start ()
@@ -317,14 +328,18 @@ public class DoubleArrowsScript : MonoBehaviour {
         {
             yield return null;
             buttons[8].OnInteract();
-	    yield break;
+            yield break;
         }
-
-            var buttonstring = Regex.Match(command, @"^\s*([lurdLURD, ]+)\s*$");
+        var buttonstring = Regex.Match(command, @"^\s*([lurdLURD, ]+)\s*$");
         if (!buttonstring.Success)
             yield break;
-
-        yield return null;
-        yield return buttonstring.Groups[1].Value.Select(ch => { var pos = "lurdLURD".IndexOf(ch); return pos == -1 ? null : buttons[pos]; }).Where(button => button != null).ToArray();
+        string buttonstringmodified = buttonstring.ToString().Replace(" ", "").Replace(",", "");
+        for (int i = 0; i < buttonstringmodified.Length; i++) 
+        {
+            yield return null;
+            yield return "trycancel The command is cancelled. Move #" + (i+1) + " onwards are not executed.";
+            yield return "strikemessage move #" + (i+1);
+            arrowsDict[buttonstringmodified[i].ToString()].OnInteract();
+        }
     }
 }
