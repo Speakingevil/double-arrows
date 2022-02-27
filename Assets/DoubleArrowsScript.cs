@@ -333,11 +333,13 @@ public class DoubleArrowsScript : MonoBehaviour {
     {
         if (freeMode)
         {
+            int[] order = { 0, 1, 2, 3, 4, 5, 6, 7 };
+            order = order.Shuffle();
             for (int i = 0; i < 8; i++)
             {
-                if (!pressed[i])
+                if (!pressed[order[i]])
                 {
-                    buttons[i].OnInteract();
+                    buttons[order[i]].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                 }
             }
