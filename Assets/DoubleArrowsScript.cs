@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
 using KModkit;
+using System;
 
 public class DoubleArrowsScript : MonoBehaviour {
     public KMAudio Audio;
@@ -56,7 +57,7 @@ public class DoubleArrowsScript : MonoBehaviour {
         if(moduleSolved == false)
         {
             buttons[b].AddInteractionPunch(0.5f);
-            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, buttons[b].transform);
             if (b == 8)
             {
                 Debug.LogFormat("[Double Arrows #{0}]Reset button pressed", moduleID);
@@ -106,7 +107,7 @@ public class DoubleArrowsScript : MonoBehaviour {
                             }
                             else if (freeMode == false)
                             {
-                                Debug.LogFormat("[Double Arrows #{0}]Inner {2} pressed: inavlid move to {1}", moduleID, grid[(location[0] + 8) % 9][location[1]], dir[b]);
+                                Debug.LogFormat("[Double Arrows #{0}]Inner {2} pressed: invalid move to {1}", moduleID, grid[(location[0] + 8) % 9][location[1]], dir[b]);
                                 GetComponent<KMBombModule>().HandleStrike();
                             }
                             break;
@@ -288,11 +289,11 @@ public class DoubleArrowsScript : MonoBehaviour {
         }
         for(int i = 0; i < 2; i++)
         {
-            location[i] = Random.Range(0, 9);
+            location[i] = UnityEngine.Random.Range(0, 9);
             List<int> init = new List<int> { 0, 1, 2, 3 };
             for(int j = 4; j > 0; j--)
             {
-                int rand = Random.Range(0, j);
+                int rand = UnityEngine.Random.Range(0, j);
                 callib[i][4 - j] = init[rand];
                 Debug.LogFormat("[Double Arrows #{0}]The {1} {2} button moves {3} {4} {5}", moduleID, new string[] { "Inner", "Outer" }[i], dir[4 - j], i + 1, new string[] { "space", "spaces"}[i], dir[init[rand]]);
                 init.RemoveAt(rand);
@@ -308,7 +309,7 @@ public class DoubleArrowsScript : MonoBehaviour {
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} udlr [Presses inner buttons] | UDLR [Presses outer buttons] | reset [Presses black button]";
+    private readonly string TwitchHelpMessage = @"!{0} udlr [Presses inner buttons] | !{0} UDLR [Presses outer buttons] | !{0} reset [Presses black button]";
 #pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string command)
@@ -317,7 +318,7 @@ public class DoubleArrowsScript : MonoBehaviour {
         {
             yield return null;
             buttons[8].OnInteract();
-	    yield break;
+	        yield break;
         }
 
             var buttonstring = Regex.Match(command, @"^\s*([lurdLURD, ]+)\s*$");
@@ -326,5 +327,41 @@ public class DoubleArrowsScript : MonoBehaviour {
 
         yield return null;
         yield return buttonstring.Groups[1].Value.Select(ch => { var pos = "lurdLURD".IndexOf(ch); return pos == -1 ? null : buttons[pos]; }).Where(button => button != null).ToArray();
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        if (freeMode)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (!pressed[i])
+                {
+                    buttons[i].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
+        }
+        int start = pressCount;
+        for (int i = start; i < 10; i++)
+        {
+            if ((grid[location[0]][(location[1] + 8) % 9] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[location[0]][(location[1] + 8) % 9] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[0], 0)].OnInteract();
+            else if ((grid[(location[0] + 8) % 9][location[1]] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[(location[0] + 8) % 9][location[1]] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[0], 1)].OnInteract();
+            else if ((grid[location[0]][(location[1] + 1) % 9] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[location[0]][(location[1] + 1) % 9] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[0], 2)].OnInteract();
+            else if ((grid[(location[0] + 1) % 9][location[1]] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[(location[0] + 1) % 9][location[1]] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[0], 3)].OnInteract();
+            else if ((grid[location[0]][(location[1] + 7) % 9] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[location[0]][(location[1] + 7) % 9] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[1], 0) + 4].OnInteract();
+            else if ((grid[(location[0] + 7) % 9][location[1]] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[(location[0] + 7) % 9][location[1]] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[1], 1) + 4].OnInteract();
+            else if ((grid[location[0]][(location[1] + 2) % 9] == grid[location[0]][location[1]] % 81 + 1 && ascend == true) || (grid[location[0]][(location[1] + 2) % 9] == (grid[location[0]][location[1]] + 79) % 81 + 1 && ascend == false))
+                buttons[Array.IndexOf(callib[1], 2) + 4].OnInteract();
+            else
+                buttons[Array.IndexOf(callib[1], 3) + 4].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 }
