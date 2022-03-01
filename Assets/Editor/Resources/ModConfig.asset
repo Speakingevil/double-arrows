@@ -14,11 +14,11 @@ MonoBehaviour:
   id: doubleArrows
   title: Double Arrows
   author: Speakingevil
-  description: "Double Arrows ver 1.0:\n~~It's enough to get you to the boiling point.~~\nGarbage.
+  description: "Double Arrows ver 1.1:\n~~It's enough to get you to the boiling point.~~\nGarbage.
     This was clearly wired up by imbeciles. \u2605\u2606\u2606\u2606\u2606\n\nUse
     the somewhat unreliable buttons to navigate your way around a grid of numbers.\n\nCreated
     by Speakingevil\n\nBased on:\n-The Arrows series by eXish & Kusane\n-Double-Oh
     by Elias & Timwi"
-  version: 1.0
+  version: 1.1
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 79766a86c05921d4f96c6dd5ad999473, type: 3}
